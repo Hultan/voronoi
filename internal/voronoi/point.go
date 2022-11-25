@@ -28,5 +28,6 @@ func (p Point) getClosestTo(seeds []SeedPoint) int {
 		}
 	}
 
+	// Test SSH
 	return i
 }
