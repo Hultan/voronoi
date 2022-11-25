@@ -74,7 +74,7 @@ func (v *Voronoi) generateSeedPoints() {
 		v.seeds = append(
 			v.seeds, SeedPoint{
 				Point: Point{x, y},
-				color: getRandomColor(),
+				color: getGrayScaleColor(i, v.numSeedPoints),
 			},
 		)
 	}

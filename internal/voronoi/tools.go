@@ -14,6 +14,19 @@ func getRandomColor() color.RGBA {
 	}
 }
 
+func getGrayScaleColor(i, of int) color.RGBA {
+	return color.RGBA{
+		R: getGrayScaleValue(i, of),
+		G: getGrayScaleValue(i, of),
+		B: getGrayScaleValue(i, of),
+		A: 255,
+	}
+}
+
+func getGrayScaleValue(i, of int) uint8 {
+	return uint8(float64(i) / float64(of) * 256)
+}
+
 func getRandomUint8() uint8 {
 	return uint8(rand.Intn(256))
 }
