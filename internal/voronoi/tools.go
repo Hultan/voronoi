@@ -15,10 +15,11 @@ func getRandomColor() color.RGBA {
 }
 
 func getGrayScaleColor(i, of int) color.RGBA {
+	col := getGrayScaleValue(i, of)
 	return color.RGBA{
-		R: getGrayScaleValue(i, of),
-		G: getGrayScaleValue(i, of),
-		B: getGrayScaleValue(i, of),
+		R: col,
+		G: col,
+		B: col,
 		A: 255,
 	}
 }

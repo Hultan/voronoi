@@ -10,7 +10,7 @@ var BLACK = color.RGBA{A: 255}
 
 // GenerateVoronoi : Startup function
 func GenerateVoronoi() {
-	c := NewConfig(35, BLACK, 5)
+	c := NewConfig(35, BLACK, 5, colorRandom)
 	// c := NewConfigNoRender(35)
 	v := NewVoronoi(c)
 	v.Generate()
