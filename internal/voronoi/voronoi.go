@@ -13,45 +13,51 @@ import (
 type colorScheme int
 
 const (
-	colorRandom colorScheme = iota
-	colorGreyScale
+	colorSchemeRandom colorScheme = iota
+	colorSchemeGreyScale
 )
+
+type distanceMethod int
+
+const (
+	distanceMethodEuclidean distanceMethod = iota
+	distanceMethodManhattan
+)
+
+type Config struct {
+	SeedPointConfig
+	colorScheme    colorScheme
+	distanceMethod distanceMethod
+}
 
 type SeedPointConfig struct {
 	numSeedPoints    int
 	renderSeedPoints bool
 	seedPointColor   color.RGBA
 	seedPointRadius  int
-	colorScheme      colorScheme
 }
 
 type Voronoi struct {
-	SeedPointConfig
+	Config
 	seeds []SeedPoint
 	image *image.RGBA
 }
 
-func NewConfig(num int, col color.RGBA, radius int, scheme colorScheme) SeedPointConfig {
-	return SeedPointConfig{
-		numSeedPoints:    num,
-		renderSeedPoints: true,
-		seedPointColor:   col,
-		seedPointRadius:  radius,
-		colorScheme:      scheme,
+func NewConfig() Config {
+	return Config{
+		SeedPointConfig: SeedPointConfig{
+			numSeedPoints:    30,
+			renderSeedPoints: true,
+			seedPointColor:   color.RGBA{A: 255},
+			seedPointRadius:  5,
+		},
+		colorScheme:    colorSchemeRandom,
+		distanceMethod: distanceMethodEuclidean,
 	}
 }
 
-func NewConfigNoRender(num int) SeedPointConfig {
-	return SeedPointConfig{
-		numSeedPoints:    num,
-		renderSeedPoints: false,
-		seedPointColor:   color.RGBA{},
-		seedPointRadius:  0,
-	}
-}
-
-func NewVoronoi(config SeedPointConfig) *Voronoi {
-	v := &Voronoi{SeedPointConfig: config}
+func NewVoronoi(config Config) *Voronoi {
+	v := &Voronoi{Config: config}
 	v.generateSeedPoints()
 	return v
 }
@@ -85,9 +91,9 @@ func (v *Voronoi) generateSeedPoints() {
 		// Get color
 		var color color.RGBA
 		switch v.colorScheme {
-		case colorRandom:
+		case colorSchemeRandom:
 			color = getRandomColor()
-		case colorGreyScale:
+		case colorSchemeGreyScale:
 			getGrayScaleColor(i, v.numSeedPoints)
 		}
 
@@ -108,7 +114,8 @@ func (v *Voronoi) generateVoronoi() {
 		go func(x int) {
 			for y := 0; y < 600; y++ {
 				p := Point{x, y}
-				v.image.SetRGBA(p.x, p.y, v.seeds[p.getClosestTo(v.seeds)].color)
+				closest := p.getClosestSeedPoint(v.distanceMethod, v.seeds)
+				v.image.SetRGBA(p.x, p.y, v.seeds[closest].color)
 			}
 			wg.Done()
 		}(x)
