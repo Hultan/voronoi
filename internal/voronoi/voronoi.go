@@ -26,6 +26,7 @@ const (
 
 type Config struct {
 	SeedPointConfig
+	width, height  int
 	colorScheme    colorScheme
 	distanceMethod distanceMethod
 }
@@ -85,34 +86,33 @@ func (v *Voronoi) generateSeedPoints() {
 	rand.Seed(time.Now().UnixNano())
 
 	for i := 0; i < v.numSeedPoints; i++ {
-		x := rand.Intn(800)
-		y := rand.Intn(600)
+		x, y := rand.Intn(v.width), rand.Intn(v.height)
 
 		// Get color
-		var color color.RGBA
+		var col color.RGBA
 		switch v.colorScheme {
 		case colorSchemeRandom:
-			color = getRandomColor()
+			col = getRandomColor()
 		case colorSchemeGreyScale:
-			getGrayScaleColor(i, v.numSeedPoints)
+			col = getGrayScaleColor(i, v.numSeedPoints)
 		}
 
 		v.seeds = append(
 			v.seeds, SeedPoint{
 				Point: Point{x, y},
-				color: color,
+				color: col,
 			},
 		)
 	}
 }
 
 func (v *Voronoi) generateVoronoi() {
-	v.image = image.NewRGBA(image.Rect(0, 0, 800, 600))
+	v.image = image.NewRGBA(image.Rect(0, 0, v.width, v.height))
 	wg := sync.WaitGroup{}
-	wg.Add(800)
-	for x := 0; x < 800; x++ {
+	wg.Add(v.width)
+	for x := 0; x < v.width; x++ {
 		go func(x int) {
-			for y := 0; y < 600; y++ {
+			for y := 0; y < v.height; y++ {
 				p := Point{x, y}
 				closest := p.getClosestSeedPoint(v.distanceMethod, v.seeds)
 				v.image.SetRGBA(p.x, p.y, v.seeds[closest].color)
