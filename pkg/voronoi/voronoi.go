@@ -52,6 +52,8 @@ func NewConfig() Config {
 			SeedPointColor:   color.RGBA{A: 255},
 			SeedPointRadius:  5,
 		},
+		Width:          800,
+		Height:         600,
 		ColorScheme:    ColorSchemeRandom,
 		DistanceMethod: DistanceMethodEuclidean,
 	}
