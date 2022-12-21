@@ -15,17 +15,13 @@ func getRandomColor() color.RGBA {
 }
 
 func getGrayScaleColor(i, of int) color.RGBA {
-	col := getGrayScaleValue(i, of)
+	col := uint8(float64(i) / float64(of) * 256)
 	return color.RGBA{
 		R: col,
 		G: col,
 		B: col,
 		A: 255,
 	}
-}
-
-func getGrayScaleValue(i, of int) uint8 {
-	return uint8(float64(i) / float64(of) * 256)
 }
 
 func getRandomUint8() uint8 {

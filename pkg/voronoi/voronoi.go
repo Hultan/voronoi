@@ -78,7 +78,10 @@ func (v *Voronoi) generateSeedPoints() {
 }
 
 func (v *Voronoi) generateVoronoi() {
+	// Create image for Voronoi
 	v.image = image.NewRGBA(image.Rect(0, 0, v.Width, v.Height))
+
+	// Generate Voronoi
 	wg := sync.WaitGroup{}
 	wg.Add(v.Width)
 	for x := 0; x < v.Width; x++ {
