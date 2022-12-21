@@ -3,6 +3,7 @@ package voronoi
 import (
 	"image"
 	"image/color"
+	"image/gif"
 	"image/png"
 	"math/rand"
 	"os"
@@ -10,79 +11,47 @@ import (
 	"time"
 )
 
-type ColorScheme int
-
-const (
-	ColorSchemeRandom ColorScheme = iota
-	ColorSchemeGreyScale
-)
-
-type DistanceMethod int
-
-const (
-	DistanceMethodEuclidean DistanceMethod = iota
-	DistanceMethodManhattan
-)
-
-type Config struct {
-	SeedPointConfig
-	Width, Height  int
-	ColorScheme    ColorScheme
-	DistanceMethod DistanceMethod
-}
-
-type SeedPointConfig struct {
-	NumSeedPoints    int
-	RenderSeedPoints bool
-	SeedPointColor   color.RGBA
-	SeedPointRadius  int
-}
-
 type Voronoi struct {
 	Config
 	seeds []seedPoint
 	image *image.RGBA
 }
 
-func NewConfig() Config {
-	return Config{
-		SeedPointConfig: SeedPointConfig{
-			NumSeedPoints:    30,
-			RenderSeedPoints: true,
-			SeedPointColor:   color.RGBA{A: 255},
-			SeedPointRadius:  5,
-		},
-		Width:          800,
-		Height:         600,
-		ColorScheme:    ColorSchemeRandom,
-		DistanceMethod: DistanceMethodEuclidean,
-	}
-}
-
 func NewVoronoi(config Config) *Voronoi {
 	v := &Voronoi{Config: config}
-	v.generateSeedPoints()
 	return v
 }
 
 func (v *Voronoi) Generate() {
+	v.generateSeedPoints()
 	v.generateVoronoi()
 	if v.RenderSeedPoints {
 		v.drawSeedPoints()
 	}
 }
 
-func (v *Voronoi) SaveToPng(path string) error {
+func (v *Voronoi) SaveToPng(path string, format ImageFormat) error {
 	file, err := os.OpenFile(path, os.O_CREATE|os.O_RDWR, 0644)
 	if err != nil {
 		return err
 	}
-	err = png.Encode(file, v.image)
+
+	switch format {
+	case ImageFormatPNG:
+		err = png.Encode(file, v.image)
+	case ImageFormatGIF:
+		err = gif.Encode(file, v.image, nil)
+	}
 	if err != nil {
 		return err
 	}
+
 	return nil
 }
+
+//
+// Private functions
+//
 
 func (v *Voronoi) generateSeedPoints() {
 	rand.Seed(time.Now().UnixNano())

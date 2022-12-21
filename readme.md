@@ -10,6 +10,7 @@ Package for generating Voronoi diagrams.
 * Seed point radius and color
 * Render seed point or not
 * Color scheme : Random or grey scale
+
 ## Usage
 ```Go
 func main() {
@@ -24,7 +25,7 @@ func main() {
 	c.RenderSeedPoints = true
 	v := voronoi.NewVoronoi(c)
 	v.Generate()
-	err := v.SaveToPng("/home/per/temp/voronoi.png")
+	err := v.SaveToPng("/home/per/temp/voronoi.png", voronoi.ImageFormatPNG)
 	if err != nil {
 		_, _ = fmt.Fprintf(os.Stderr, "Failed to save to file : %v", err)
 	}
