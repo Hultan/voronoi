@@ -10,50 +10,50 @@ import (
 	"time"
 )
 
-type colorScheme int
+type ColorScheme int
 
 const (
-	colorSchemeRandom colorScheme = iota
-	colorSchemeGreyScale
+	ColorSchemeRandom ColorScheme = iota
+	ColorSchemeGreyScale
 )
 
-type distanceMethod int
+type DistanceMethod int
 
 const (
-	distanceMethodEuclidean distanceMethod = iota
-	distanceMethodManhattan
+	DistanceMethodEuclidean DistanceMethod = iota
+	DistanceMethodManhattan
 )
 
 type Config struct {
 	SeedPointConfig
-	width, height  int
-	colorScheme    colorScheme
-	distanceMethod distanceMethod
+	Width, Height  int
+	ColorScheme    ColorScheme
+	DistanceMethod DistanceMethod
 }
 
 type SeedPointConfig struct {
-	numSeedPoints    int
-	renderSeedPoints bool
-	seedPointColor   color.RGBA
-	seedPointRadius  int
+	NumSeedPoints    int
+	RenderSeedPoints bool
+	SeedPointColor   color.RGBA
+	SeedPointRadius  int
 }
 
 type Voronoi struct {
 	Config
-	seeds []SeedPoint
+	seeds []seedPoint
 	image *image.RGBA
 }
 
 func NewConfig() Config {
 	return Config{
 		SeedPointConfig: SeedPointConfig{
-			numSeedPoints:    30,
-			renderSeedPoints: true,
-			seedPointColor:   color.RGBA{A: 255},
-			seedPointRadius:  5,
+			NumSeedPoints:    30,
+			RenderSeedPoints: true,
+			SeedPointColor:   color.RGBA{A: 255},
+			SeedPointRadius:  5,
 		},
-		colorScheme:    colorSchemeRandom,
-		distanceMethod: distanceMethodEuclidean,
+		ColorScheme:    ColorSchemeRandom,
+		DistanceMethod: DistanceMethodEuclidean,
 	}
 }
 
@@ -65,7 +65,7 @@ func NewVoronoi(config Config) *Voronoi {
 
 func (v *Voronoi) Generate() {
 	v.generateVoronoi()
-	if v.renderSeedPoints {
+	if v.RenderSeedPoints {
 		v.drawSeedPoints()
 	}
 }
@@ -85,21 +85,21 @@ func (v *Voronoi) SaveToPng(path string) error {
 func (v *Voronoi) generateSeedPoints() {
 	rand.Seed(time.Now().UnixNano())
 
-	for i := 0; i < v.numSeedPoints; i++ {
-		x, y := rand.Intn(v.width), rand.Intn(v.height)
+	for i := 0; i < v.NumSeedPoints; i++ {
+		x, y := rand.Intn(v.Width), rand.Intn(v.Height)
 
 		// Get color
 		var col color.RGBA
-		switch v.colorScheme {
-		case colorSchemeRandom:
+		switch v.ColorScheme {
+		case ColorSchemeRandom:
 			col = getRandomColor()
-		case colorSchemeGreyScale:
-			col = getGrayScaleColor(i, v.numSeedPoints)
+		case ColorSchemeGreyScale:
+			col = getGrayScaleColor(i, v.NumSeedPoints)
 		}
 
 		v.seeds = append(
-			v.seeds, SeedPoint{
-				Point: Point{x, y},
+			v.seeds, seedPoint{
+				point: point{x, y},
 				color: col,
 			},
 		)
@@ -107,14 +107,14 @@ func (v *Voronoi) generateSeedPoints() {
 }
 
 func (v *Voronoi) generateVoronoi() {
-	v.image = image.NewRGBA(image.Rect(0, 0, v.width, v.height))
+	v.image = image.NewRGBA(image.Rect(0, 0, v.Width, v.Height))
 	wg := sync.WaitGroup{}
-	wg.Add(v.width)
-	for x := 0; x < v.width; x++ {
+	wg.Add(v.Width)
+	for x := 0; x < v.Width; x++ {
 		go func(x int) {
-			for y := 0; y < v.height; y++ {
-				p := Point{x, y}
-				closest := p.getClosestSeedPoint(v.distanceMethod, v.seeds)
+			for y := 0; y < v.Height; y++ {
+				p := point{x, y}
+				closest := p.getClosestSeedPoint(v.DistanceMethod, v.seeds)
 				v.image.SetRGBA(p.x, p.y, v.seeds[closest].color)
 			}
 			wg.Done()
@@ -125,12 +125,12 @@ func (v *Voronoi) generateVoronoi() {
 
 func (v *Voronoi) drawSeedPoints() {
 	for _, seed := range v.seeds {
-		v.drawCircle(seed.Point)
+		v.drawCircle(seed.point)
 	}
 }
 
-func (v *Voronoi) drawCircle(c Point) {
-	r := v.seedPointRadius
+func (v *Voronoi) drawCircle(c point) {
+	r := v.SeedPointRadius
 	x0, y0 := c.x-r, c.y-r // Top left corner
 	x1, y1 := c.x+r, c.y+r // Bottom right corner
 
@@ -138,7 +138,7 @@ func (v *Voronoi) drawCircle(c Point) {
 		for y := y0; y < y1; y++ {
 			dx, dy := x-c.x, y-c.y
 			if dx*dx+dy*dy <= r*r {
-				v.image.SetRGBA(x, y, v.seedPointColor)
+				v.image.SetRGBA(x, y, v.SeedPointColor)
 			}
 		}
 	}

@@ -5,36 +5,36 @@ import (
 	"math"
 )
 
-type Point struct {
+type point struct {
 	x, y int
 }
 
-type SeedPoint struct {
-	Point
+type seedPoint struct {
+	point
 	color color.RGBA
 }
 
-func (p Point) distanceTo(method distanceMethod, s Point) float64 {
+func (p point) distanceTo(method DistanceMethod, s point) float64 {
 	result := 0.0
 
 	dx1, dy1 := p.x-s.x, p.y-s.y
 	switch method {
-	case distanceMethodEuclidean:
+	case DistanceMethodEuclidean:
 		result = math.Sqrt(float64(dx1*dx1 + dy1*dy1))
-	case distanceMethodManhattan:
+	case DistanceMethodManhattan:
 		result = float64(abs(dx1) + abs(dy1))
 	}
 
 	return result
 }
 
-func (p Point) getClosestSeedPoint(method distanceMethod, seeds []SeedPoint) int {
+func (p point) getClosestSeedPoint(method DistanceMethod, seeds []seedPoint) int {
 	i := 0
 
 	for s := 1; s < len(seeds); s++ {
 		// If distance to point i is greater than distance to point s,
 		// set i to equal s
-		if p.distanceTo(method, seeds[i].Point) > p.distanceTo(method, seeds[s].Point) {
+		if p.distanceTo(method, seeds[i].point) > p.distanceTo(method, seeds[s].point) {
 			i = s
 		}
 	}

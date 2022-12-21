@@ -1,9 +1,9 @@
 package main
 
 import (
-	"github.com/hultan/voronoi/internal/voronoi"
+	"github.com/hultan/voronoi/internal/voronoi-test"
 )
 
 func main() {
-	voronoi.GenerateVoronoi()
+	voronoi_test.GenerateVoronoi()
 }
