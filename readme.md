@@ -14,15 +14,12 @@ Package for generating Voronoi diagrams.
 ## Usage
 ```Go
 func main() {
-	c := voronoi.NewConfig()
-	c.Width = 4000
-	c.Height = 3000
-	c.DistanceMethod = voronoi.DistanceMethodEuclidean
-	c.NumSeedPoints = 100
-	c.SeedPointRadius = 20
-	c.SeedPointColor = color.RGBA{A: 255}
-	c.ColorScheme = voronoi.ColorSchemeRandom
-	c.RenderSeedPoints = true
+    v := voronoi.NewVoronoi(
+        voronoi.WithSize(800, 600),
+        voronoi.WithSeed(100, 5, BLACK, true),
+        voronoi.WithScheme(voronoi.ColorSchemeRandom),
+        voronoi.WithMethod(voronoi.DistanceMethodManhattan),
+    )
 	v := voronoi.NewVoronoi(c)
 	v.Generate()
 	err := v.SaveToPng("/home/per/temp/voronoi.png", voronoi.ImageFormatPNG)
