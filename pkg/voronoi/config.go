@@ -4,8 +4,6 @@ import (
 	"image/color"
 )
 
-type ConfigFunc func(*Config)
-
 type ImageFormat int
 
 const (
@@ -55,6 +53,8 @@ func defaultConfig() Config {
 		DistanceMethod: DistanceMethodEuclidean,
 	}
 }
+
+type ConfigFunc func(*Config)
 
 func WithSize(width, height int) ConfigFunc {
 	return func(cfg *Config) {
