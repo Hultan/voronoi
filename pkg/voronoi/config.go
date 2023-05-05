@@ -4,6 +4,8 @@ import (
 	"image/color"
 )
 
+type ConfigFunc func(*Config)
+
 type ImageFormat int
 
 const (
@@ -39,7 +41,7 @@ type SeedPointConfig struct {
 	SeedPointRadius  int
 }
 
-func NewConfig() Config {
+func defaultConfig() Config {
 	return Config{
 		SeedPointConfig: SeedPointConfig{
 			NumSeedPoints:    30,
@@ -51,5 +53,33 @@ func NewConfig() Config {
 		Height:         600,
 		ColorScheme:    ColorSchemeRandom,
 		DistanceMethod: DistanceMethodEuclidean,
+	}
+}
+
+func WithSize(width, height int) ConfigFunc {
+	return func(cfg *Config) {
+		cfg.Width = width
+		cfg.Height = height
+	}
+}
+
+func WithSeed(num, radius int, col color.RGBA, render bool) ConfigFunc {
+	return func(cfg *Config) {
+		cfg.NumSeedPoints = num
+		cfg.SeedPointRadius = radius
+		cfg.SeedPointColor = col
+		cfg.RenderSeedPoints = render
+	}
+}
+
+func WithScheme(scheme ColorScheme) ConfigFunc {
+	return func(cfg *Config) {
+		cfg.ColorScheme = scheme
+	}
+}
+
+func WithMethod(method DistanceMethod) ConfigFunc {
+	return func(cfg *Config) {
+		cfg.DistanceMethod = method
 	}
 }

@@ -17,8 +17,12 @@ type Voronoi struct {
 	image *image.RGBA
 }
 
-func NewVoronoi(config Config) *Voronoi {
-	v := &Voronoi{Config: config}
+func NewVoronoi(config ...ConfigFunc) *Voronoi {
+	cfg := defaultConfig()
+	for _, fn := range config {
+		fn(&cfg)
+	}
+	v := &Voronoi{Config: cfg}
 	return v
 }
 

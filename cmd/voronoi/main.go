@@ -11,16 +11,12 @@ import (
 var BLACK = color.RGBA{A: 255}
 
 func main() {
-	c := voronoi.NewConfig()
-	c.Width = 800
-	c.Height = 600
-	c.DistanceMethod = voronoi.DistanceMethodEuclidean
-	c.NumSeedPoints = 100
-	c.SeedPointRadius = 5
-	c.SeedPointColor = BLACK
-	c.ColorScheme = voronoi.ColorSchemeRandom
-	c.RenderSeedPoints = true
-	v := voronoi.NewVoronoi(c)
+	v := voronoi.NewVoronoi(
+		voronoi.WithSize(800, 600),
+		voronoi.WithSeed(100, 5, BLACK, true),
+		voronoi.WithScheme(voronoi.ColorSchemeRandom),
+		voronoi.WithMethod(voronoi.DistanceMethodManhattan),
+	)
 	v.Generate()
 	err := v.SaveToPng("/home/per/temp/voronoi.png", voronoi.ImageFormatPNG)
 	if err != nil {
